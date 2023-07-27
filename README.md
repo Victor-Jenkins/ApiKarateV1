@@ -1,6 +1,6 @@
 
 
-# HIBERUS
+# KARATE AUTOMATION
 
 Stack utilizado:
 Maven, Gherkin, Karate, java11, VSCode.

@@ -13,23 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set Up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
-
-    - name: Install Karate DSL
-      run: |
-        # Instala Karate DSL
-        npm install -g karate@1.1.0
-
     - name: Run Karate Tests
       run: |
-        # Cambia al directorio donde se encuentran tus pruebas Karate
-        cd src/test/java/com/petstore/features
-
-        # Ejecuta las pruebas Karate utilizando Cucumber
-        karate --tags @your_tag --glue path/to/step_definitions
+        # Ejecuta las pruebas Karate utilizando el archivo ejecutable karate.jar
+        java -jar path/to/karate.jar src/test/java/com/petstore/features --tags @your_tag --glue path/to/step_definitions
 
   deploy_to_gh_pages:
     needs: run_karate_tests
@@ -48,10 +35,5 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.KARATE }}
-        publish_dir: ./docs  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
+        publish_dir: ./target/karate-reports  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.KARATE }}
-        publish_dir: ./docs  # Directorio donde se encuentra el sitio generado, incluyendo los reportes

@@ -1,0 +1,37 @@
+name: API Tests and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run Karate Tests
+      run: |
+        # Ejecuta tus pruebas Karate aquí
+        # Asegúrate de que los reportes se generen en una carpeta llamada 'karate-reports'
+
+    - name: Copy Karate Reports
+      run: |
+        cp -r karate-reports ${{ github.workspace }}/docs/karate-reports
+
+    - name: Build the site in the jekyll/builder container
+      run: |
+        docker run \
+        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/docs:/srv/jekyll/_site \
+        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.KARATE }}
+        publish_dir: ./docs  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
+

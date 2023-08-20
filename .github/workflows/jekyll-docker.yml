@@ -15,8 +15,7 @@ jobs:
 
     - name: Run Karate Tests
       run: |
-        # Ejecuta tus pruebas Karate aquí
-        # Asegúrate de que los reportes se generen en una carpeta llamada 'karate-reports'
+        karate -e environment.properties
 
     - name: Copy Karate Reports
       run: |

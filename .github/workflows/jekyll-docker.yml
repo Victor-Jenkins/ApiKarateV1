@@ -20,7 +20,8 @@ jobs:
 
     - name: Copy Karate Reports
       run: |
-        cp -r karate-reports ${{ github.workspace }}/docs/karate-reports
+        mkdir -p ${{ github.workspace }}/docs/karate-reports
+        cp -r target/karate-reports ${{ github.workspace }}/docs/karate-reports
 
   deploy_to_gh_pages:
     needs: run_karate_tests
@@ -38,5 +39,5 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.KARATE }}
         publish_dir: ./docs  # Directorio donde se encuentra el sitio generado, incluyendo los reportes

@@ -19,7 +19,9 @@ jobs:
         node-version: 14
 
     - name: Install Karate DSL
-      run: npm install -g karate
+      run: |
+        # Instala Karate DSL
+        npm install -g karate@1.1.0
 
     - name: Run Karate Tests
       run: |
@@ -41,6 +43,12 @@ jobs:
         docker run \
         -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/docs:/srv/jekyll/_site \
         jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.KARATE }}
+        publish_dir: ./docs  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3

@@ -40,4 +40,4 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.KARATE }}
-        publish_dir: ./docs  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
+        publish_dir: ./target/karate-reports  # Directorio donde se encuentra el sitio generado, incluyendo los reportes

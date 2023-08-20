@@ -7,8 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  run_karate_tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +22,13 @@ jobs:
       run: |
         cp -r karate-reports ${{ github.workspace }}/docs/karate-reports
 
+  deploy_to_gh_pages:
+    needs: run_karate_tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
     - name: Build the site in the jekyll/builder container
       run: |
         docker run \
@@ -32,6 +38,5 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.KARATE }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
-

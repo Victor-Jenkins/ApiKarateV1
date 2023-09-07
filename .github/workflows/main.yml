@@ -1,0 +1,46 @@
+name: API Tests and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  run_karate_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Karate
+      run: |
+        # Instala Karate en el entorno de ejecución
+        wget -O karate.jar https://github.com/intuit/karate/releases/download/v1.0.2/karate-1.0.2.jar
+        chmod +x karate.jar
+        mv karate.jar /usr/local/bin/
+      shell: bash
+
+    - name: Run Karate Tests
+      run: |
+        # Ejecuta las pruebas Karate utilizando el comando karate
+        karate src/test/java/com/petstore/features --tags @your_tag --glue path/to/step_definitions
+      shell: bash
+
+  deploy_to_gh_pages:
+    needs: run_karate_tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the site in the jekyll/builder container
+      run: |
+        docker run \
+        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/docs:/srv/jekyll/_site \
+        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.KARATE }}
+        publish_dir: ./target/karate-reports 

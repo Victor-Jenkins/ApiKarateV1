@@ -21,6 +21,7 @@ jobs:
         mv karate.jar /usr/local/bin/
       shell: bash
 
+
     - name: Run Karate Tests
       run: |
         # Ejecuta las pruebas Karate utilizando el comando karate

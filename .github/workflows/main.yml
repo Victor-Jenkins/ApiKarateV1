@@ -13,14 +13,22 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Get Karate Version from pom.xml
+      id: get_karate_version
+      run: |
+        karate_version=$(grep -oP '<version>\K[^<]+' pom.xml | grep -oP '\d+\.\d+\.\d+')
+        echo "Karate version: $karate_version"
+        echo "::set-output name=karate_version::$karate_version"
+      shell: bash
+
     - name: Install Karate
       run: |
-        # Instala Karate en el entorno de ejecución
-        wget -O karate.jar https://github.com/intuit/karate/releases/download/v1.0.2/karate-1.0.2.jar
+        karate_version="${{ steps.get_karate_version.outputs.karate_version }}"
+        karate_jar_url="https://github.com/intuit/karate/releases/download/v$karate_version/karate-$karate_version.jar"
+        wget -O karate.jar "$karate_jar_url"
         chmod +x karate.jar
         mv karate.jar /usr/local/bin/
       shell: bash
-
 
     - name: Run Karate Tests
       run: |
@@ -44,4 +52,5 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.KARATE }}
-        publish_dir: ./target/karate-reports 
+        publish_dir: ./target/karate-reports  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
+

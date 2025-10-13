@@ -1,4 +1,4 @@
-Feature: PetStore 
+Feature: PetStore
 
   Background:
     * url baseURL

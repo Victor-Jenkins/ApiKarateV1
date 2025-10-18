@@ -13,30 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Get Karate Version from pom.xml
-      id: get_karate_version
-      run: |
-        karate_version=$(grep -oP '<version>\K[^<]+' pom.xml | grep -oP '\d+\.\d+\.\d+')
-        echo "Karate version: $karate_version"
-        echo "::set-output name=karate_version::$karate_version"
-      shell: bash
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
-    - name: Install Karate
-      run: |
-        karate_version="${{ steps.get_karate_version.outputs.karate_version }}"
-        karate_jar_url="https://github.com/intuit/karate/releases/download/v$karate_version/karate-$karate_version.jar"
-        wget -O karate.jar "$karate_jar_url"
-        chmod +x karate.jar
-        mv karate.jar /usr/local/bin/
-        echo "export PATH=\$PATH:/usr/local/bin" >> $HOME/.bashrc
-        source $HOME/.bashrc
-      shell: bash
-
-    - name: Run Karate Tests
-      run: |
-        # Ejecuta las pruebas Karate utilizando el comando karate
-        karate src/test/java/com/petstore/features --tags @your_tag --glue path/to/step_definitions
-      shell: bash
+    - name: Run Karate Tests with Maven
+      run: mvn test
 
   deploy_to_gh_pages:
     needs: run_karate_tests
@@ -50,9 +34,9 @@ jobs:
         docker run \
         -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/docs:/srv/jekyll/_site \
         jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.KARATE }}
-        publish_dir: ./target/karate-reports  # Directorio donde se encuentra el sitio generado, incluyendo los reportes
-
+        publish_dir: ./target/karate-reports
